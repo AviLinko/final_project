@@ -5,7 +5,7 @@ import pyautogui
 class Sensor:
     def __init__(self, name, position, orientation):
         self.name = name
-        self.position = position
+        self.position = position 
         self.orientation = orientation
 
     def get_orientation(self):
