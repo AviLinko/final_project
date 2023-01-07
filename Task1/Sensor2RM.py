@@ -1,6 +1,10 @@
 from getRotationMatrix import rotation_matrix_from_vectors
 import numpy as np
 import pyautogui
+import xlsxwriter
+
+workbook = xlsxwriter.Workbook('Task1.xlsx')
+worksheet = workbook.add_worksheet()
 
 class Sensor:
     def __init__(self, name,position, orientation):
@@ -45,6 +49,7 @@ if __name__ == "__main__":
 
     sensors = BothSensors(sensor1, sensor2)
     sensors.update_objects( p_displacement_1, o_displacement_1)
+    worksheet.write('A1', sensors.sensor2)
     print("new", sensors.sensor2)
-    
+    workbook.close()
      
