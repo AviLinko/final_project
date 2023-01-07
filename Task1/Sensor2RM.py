@@ -1,11 +1,12 @@
 from getRotationMatrix import rotation_matrix_from_vectors
 import numpy as np
 import pyautogui
+import pandas as pd
 import xlsxwriter
 
-workbook = xlsxwriter.Workbook('Task1.xlsx')
-worksheet = workbook.add_worksheet()
 
+workbook = xlsxwriter.Workbook('Task1.xlsx')
+sheet = workbook.add_worksheet("Task1")
 class Sensor:
     def __init__(self, name,position, orientation):
         self.name = name
@@ -35,21 +36,26 @@ class BothSensors:
        
 
 if __name__ == "__main__":
-    
-    p_displacement_1 = np.random.rand(3)
-    o_displacement_1 = np.random.rand(3)
-    
-    position_1 = np.random.rand(3)
-    orientation_1 = np.random.rand(3)
-    sensor1 = Sensor("Sensor 1", position_1, orientation_1)
+    sheet.write(0, 0, "new sensor2:")
+    for i in range(1, 8):
+        p_displacement_1 = np.random.rand(3)
+        o_displacement_1 = np.random.rand(3)
+        
+        position_1 = np.random.rand(3)
+        orientation_1 = np.random.rand(3)
+        sensor1 = Sensor("Sensor 1", position_1, orientation_1)
 
-    position_2 = np.random.rand(3)
-    orientation_2 = np.random.rand(3)
-    sensor2 = Sensor("Sensor 2", position_2, orientation_2)
+        position_2 = np.random.rand(3)
+        orientation_2 = np.random.rand(3)
+        sensor2 = Sensor("Sensor 2", position_2, orientation_2)
 
-    sensors = BothSensors(sensor1, sensor2)
-    sensors.update_objects( p_displacement_1, o_displacement_1)
-    worksheet.write('A1', sensors.sensor2)
-    print("new", sensors.sensor2)
+        sensors = BothSensors(sensor1, sensor2)
+        sensors.update_objects( p_displacement_1, o_displacement_1)
+        str_sensor2 = sensors.sensor2.__str__()
+        
+        sheet.write(i, 0, str_sensor2)
+        
+        # print("new", sensors.sensor2)
     workbook.close()
+    
      
