@@ -33,8 +33,6 @@ class BothSensors:
     Rotates a 3D vector `vec` using the quaternion `quat`.
 """
 def rotate_vector(vec, quat):
-    
-    # Convert vector to quaternion with w = 0
     vec_quat = np.concatenate((vec, [0]))
     rotated_quat = quat_mult(quat, quat_mult(vec_quat, quat_conj(quat)))
     
@@ -60,8 +58,7 @@ def quat_conj(q):
     return np.array([w, -x, -y, -z])
 
 if __name__ == "__main__":
-    
-    for i in range(1, 8):
+    for i in range(1, 3):
         p_displacement_1 = np.random.rand(3)
         o_displacement_1 = np.random.rand(3)
         
@@ -76,5 +73,5 @@ if __name__ == "__main__":
         sensors = BothSensors(sensor1, sensor2)
         sensors.update_objects( p_displacement_1, o_displacement_1)
         str_sensor2 = sensors.sensor2.__str__()
-        
+        print(str_sensor2)
         
