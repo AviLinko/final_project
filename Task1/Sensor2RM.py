@@ -1,6 +1,5 @@
 from getRotationMatrix import rotation_matrix_from_vectors
 import numpy as np
-import pyautogui
 import pandas as pd
 import xlsxwriter
 
