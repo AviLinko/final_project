@@ -2,7 +2,7 @@
 In this task we had to perform a simulation on two objects (sensors), 
 which are initialized with a direction vector and a position vector.
 Depending on the change of the position and direction of the first object, 
-the program will return the updated position and direction of the second object.
+the program will return the updated position and direction of the second object into Excel file.
 
 
 /*************** Code ******************/
