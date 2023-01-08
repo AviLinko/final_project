@@ -1,5 +1,5 @@
 import numpy as np
-from getRotationMatrix import rotation_matrix_from_vectors
+from getQuaternion import quaternion_from_vectors
 """
     Returns the quaternion that rotates vector `vec1` to vector `vec2`.
 """
