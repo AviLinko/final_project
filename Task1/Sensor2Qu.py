@@ -36,7 +36,7 @@ def rotate_vector(vec, quat):
     vec_quat = np.concatenate((vec, [0]))
     rotated_quat = quat_mult(quat, quat_mult(vec_quat, quat_conj(quat)))
     
-    return rotated_quat[:3]
+    return rotated_quat[:4]
 
 def quat_mult(q1, q2):
     """
