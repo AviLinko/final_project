@@ -1,8 +1,11 @@
 import numpy as np
 from getQuaternion import quaternion_from_vectors
+import xlsxwriter
 """
     Returns the quaternion that rotates vector `vec1` to vector `vec2`.
 """
+workbook = xlsxwriter.Workbook('QuTask.xlsx')
+sheet = workbook.add_worksheet("quaternion")
 class Sensor:
     def __init__(self, name,position, orientation):
         self.name = name
@@ -58,7 +61,8 @@ def quat_conj(q):
     return np.array([w, -x, -y, -z])
 
 if __name__ == "__main__":
-    for i in range(1, 3):
+    sheet.write(0, 0, "new sensor2:")
+    for i in range(1, 8):
         p_displacement_1 = np.random.rand(3)
         o_displacement_1 = np.random.rand(3)
         
@@ -74,4 +78,5 @@ if __name__ == "__main__":
         sensors.update_objects( p_displacement_1, o_displacement_1)
         str_sensor2 = sensors.sensor2.__str__()
         print(str_sensor2)
-        
+        sheet.write(i, 0, str_sensor2)
+    workbook.close()
