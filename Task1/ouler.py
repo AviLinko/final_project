@@ -1,25 +1,17 @@
-import math
-from typing import List
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
 
+# Define the vector (x, y, z)
+x = 1
+y = 1
+z = 0
 
-def sensor_1():
-    size: float = 1.0,
-    location: List[float] = [0.0, 0.0, 0.0],
-    rotation: List[float] = [0.0, 0.0, 0.0]
+# Create a new figure and 3D axis
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
-def sensor_2():
-    size: float = 1.0,
-    location: List[float] = [0.0, 0.0, 0.0],
-    rotation: List[float] = [0.0, 0.0, 0.0]
+# Draw the vector using the quiver() function
+ax.quiver(0, 0, 0, x, y, z, color='r')
 
-
- if __name__ == "__main__":
-    sensor_1(location=[0.0, 0.0, 0.0])
-    sensor_2(location=[0.0, 0.0, 0.0])
-
-    # set keyframe rotation
-    sensor_1.rotation_euler = [math.radians(90), 0, 0]
-    sensor_2.rotation_euler = [0, 0, math.radians(45)]
-    
-
-
+# Show the plot
+plt.show()

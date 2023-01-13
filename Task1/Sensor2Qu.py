@@ -1,19 +1,30 @@
+from scipy.spatial.transform import Rotation as R
 import numpy as np
 from getQuaternion import quaternion_from_vectors
 import xlsxwriter
 """
     Returns the quaternion that rotates vector `vec1` to vector `vec2`.
 """
-workbook = xlsxwriter.Workbook('QuTask.xlsx')
+workbook = xlsxwriter.Workbook ('QuaTask.xlsx')
 sheet = workbook.add_worksheet("quaternion")
+
+def legal_angle(euler_angle):
+    for i in range(len(euler_angle)):
+        if euler_angle[i] < 0:
+            euler_angle[i] += 360
+        if euler_angle[i] > 360:
+            euler_angle[i] -= 360
+    
+    return euler_angle
+
 class Sensor:
-    def __init__(self, name,position, orientation):
+    def __init__(self, name, rotation, location):
         self.name = name
-        self.position = position
-        self.orientation = orientation
+        self.location = location
+        self.rotation = rotation
 
     def __str__(self):
-        return f"{self.name}:\nposition:\n{self.position}\norientation:\n{self.orientation}"
+        return f"{self.name}:\nposition:\n{self.location}\norientation:\n{self.rotation}"
 
 
 class BothSensors:
@@ -24,58 +35,58 @@ class BothSensors:
     def __str__(self):
         return f"{self.sensor1.__str__()}\n{self.sensor2.__str__()}"
 
-    def update_objects(self, p_displacement_1, o_displacement_1):
-        
-        self.sensor2.position = self.sensor2.position + (p_displacement_1 - self.sensor1.position)
-        quat = quaternion_from_vectors (self.sensor1.orientation,o_displacement_1)
-        self.sensor2.orientation = rotate_vector(self.sensor2.orientation, quat)
-        self.sensor1.position = p_displacement_1
-        self.sensor1.orientation = o_displacement_1
-       
-"""
-    Rotates a 3D vector `vec` using the quaternion `quat`.
-"""
-def rotate_vector(vec, quat):
-    vec_quat = np.concatenate((vec, [0]))
-    rotated_quat = quat_mult(quat, quat_mult(vec_quat, quat_conj(quat)))
-    
-    return rotated_quat[:4]
 
-def quat_mult(q1, q2):
-    """
-    Multiplies quaternion `q1` by quaternion `q2`.
-    """
-    w1, x1, y1, z1 = q1
-    w2, x2, y2, z2 = q2
-    w = w1*w2 - x1*x2 - y1*y2 - z1*z2
-    x = w1*x2 + x1*w2 + y1*z2 - z1*y2
-    y = w1*y2 - x1*z2 + y1*w2 + z1*x2
-    z = w1*z2 + x1*y2 - y1*x2 + z1*w2
-    return np.array([w, x, y, z])
+    def update_objects(self, r1_displacement, t1_displacement):
+        #sensor 1
+        r1 = r1_displacement
+        t1 = self.sensor1.location
+        # sensor 2
+        r2 = self.sensor2.rotation
+        t2 = self.sensor2.location
 
-def quat_conj(q):
-    """
-    Returns the conjugate of quaternion `q`.
-    """
-    w, x, y, z = q
-    return np.array([w, -x, -y, -z])
+        self.sensor2.location = t2 + np.subtract(t1_displacement , t1)
+
+        # find the difference between r1(t0) and r1(t1)
+        q_diff = r1_displacement.inv() * r1
+        # angle = 2 * np.arccos(q_diff.as_quat()[-1])
+        # axis = q_diff.as_rotvec() / np.sin(angle / 2)
+        # print("axis: " + axis)
+        # quat = R.from_rotvec(axis)
+
+        r2 = q_diff * r2
+
+        # Convert the new rotation of sensor 2 to quaternion representation
+        new_r2_quat = r2.as_quat()
+        self.sensor2.rotation = new_r2_quat
+
+        self.sensor1.position = t1_displacement
+        self.sensor1.orientation = r1_displacement
+
+
+
 
 if __name__ == "__main__":
     sheet.write(0, 0, "new sensor2:")
-    for i in range(1, 8):
-        p_displacement_1 = np.random.rand(3)
-        o_displacement_1 = np.random.rand(3)
+    for i in range(1, 2):
+        r_displacement = R.from_quat([0, 0, np.sin(np.pi*(135/180)), np.cos(np.pi*(135/180))])
+        t_displacement = np.array([1,2,1])
         
-        position_1 = np.random.rand(3)
-        orientation_1 = np.random.rand(3)
+        orientation_1 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
+        position_1 = np.array([3,3,3])
         sensor1 = Sensor("Sensor 1", position_1, orientation_1)
 
-        position_2 = np.random.rand(3)
-        orientation_2 = np.random.rand(3)
+        position_2 = np.array([3,3,3])
+        orientation_2 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
         sensor2 = Sensor("Sensor 2", position_2, orientation_2)
 
         sensors = BothSensors(sensor1, sensor2)
-        sensors.update_objects( p_displacement_1, o_displacement_1)
+        sensors.update_objects(r_displacement, t_displacement)
+
+        q1 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
+        q2 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
+
+
+     
         str_sensor2 = sensors.sensor2.__str__()
         print(str_sensor2)
         sheet.write(i, 0, str_sensor2)
