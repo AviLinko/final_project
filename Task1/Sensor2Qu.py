@@ -44,16 +44,16 @@ class BothSensors:
         r2 = self.sensor2.rotation
         t2 = self.sensor2.location
 
-        self.sensor2.location = t2 + np.subtract(t1_displacement , t1)
+        # self.sensor2.location = t2 + np.subtract(t1_displacement , t1)
 
         # find the difference between r1(t0) and r1(t1)
-        q_diff = r1_displacement.inv() * r1
+        q_diff = r1_displacement * r1.inv()
         # angle = 2 * np.arccos(q_diff.as_quat()[-1])
         # axis = q_diff.as_rotvec() / np.sin(angle / 2)
         # print("axis: " + axis)
         # quat = R.from_rotvec(axis)
 
-        r2 = q_diff * r2
+        r2 *= q_diff.inv().as_quat() 
 
         # Convert the new rotation of sensor 2 to quaternion representation
         new_r2_quat = r2.as_quat()
@@ -80,14 +80,16 @@ if __name__ == "__main__":
         sensor2 = Sensor("Sensor 2", position_2, orientation_2)
 
         sensors = BothSensors(sensor1, sensor2)
-        sensors.update_objects(r_displacement, t_displacement)
+        rotation_quat = R.from_rotvec([0, 0, np.pi/2])
+        orientation_1 *=  rotation_quat
+        print(orientation_1)
+        # sensors.update_objects(r_displacement, t_displacement)
 
-        q1 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
-        q2 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
+        # q1 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
+        # q2 = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
 
 
-     
-        str_sensor2 = sensors.sensor2.__str__()
-        print(str_sensor2)
-        sheet.write(i, 0, str_sensor2)
+        # str_sensor2 = sensors.sensor2.__str__()
+        # print(str_sensor2)
+        # sheet.write(i, 0, str_sensor2)
     workbook.close()
