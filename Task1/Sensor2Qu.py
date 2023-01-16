@@ -67,7 +67,7 @@ class BothSensors:
 
 if __name__ == "__main__":
     sheet.write(0, 0, "new sensor2:")
-    for i in range(1, 2):
+    for i in range(1, 8):
         r_displacement = R.from_quat([0, 0, np.sin(np.pi*(135/180)), np.cos(np.pi*(135/180))])
         t_displacement = np.array([1,2,1])
         

@@ -1,13 +1,18 @@
 from scipy.spatial.transform import Rotation as R
 import numpy as np
+def euler_angle_difference(eu1, eu2):
+    # create rotation objects from the initial and new Euler angles
+    r1 = R.from_euler('xyz', eu1)
+    r2 = R.from_euler('xyz', eu2)
+    # find the difference between the two rotations
+    diff_rot = r2 * r1.inv()
+    # extract the Euler angles of the difference rotation
+    diff_euler = diff_rot.as_euler('xyz')
+    return diff_euler
 
-rotation_quat = R.from_euler('z', 90, degrees=True)
+eu1 = [0, 0, 0]
+eu2 = [0, 0, np.pi / 4]
+# eu3 = [0, 0, np.pi / 6]
 
-# define the quaternion that you want to rotate
-original_quat = R.from_quat([0, 0, np.sin(np.pi/4), np.cos(np.pi/4)])
-
-# Multiply the rotation quaternion with the original quaternion
-rotated_quat = rotation_quat * original_quat
-
-if __name__ == "__main__":
-    print(rotated_quat.as_quat())
+print(euler_angle_difference(eu1, eu2)) # [0. 0. 0.7854]
+# print(euler_angle_difference(eu1, eu3)) # [0. 0. 0.5236]
