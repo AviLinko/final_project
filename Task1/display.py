@@ -4,8 +4,6 @@ from scipy.spatial.transform import Rotation as R
 import numpy as np
 
 #square
-o = [0,0,0]
-
 point1 = [1, 1, 2]
 point2 = [1, -1, 2]
 point3 = [-1, -1, 2]
