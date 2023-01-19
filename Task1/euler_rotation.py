@@ -3,6 +3,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+
 class Sensor:
     def __init__(self, name, translation, rotation):
         self.name = name
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     def update(num):
         ax1.clear()
         ax2.clear()
-        euler_angles = num* np.array([0, np.pi/2, 0])
+        euler_angles = num* np.array([0, np.pi/2, np.pi/2])
         new_translation_s1 = np.array([0,0,1])
         sensors.move(new_translation_s1)
         sensors.rotate(euler_angles)
