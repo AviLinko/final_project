@@ -55,45 +55,55 @@ def euler_angle_difference(s1_rotation, s1_new_rotation):
 
 if __name__ == "__main__":
     r1 = [0, 0, 0]
-    r2 = [0, 0, 0]
+    r2 = [0, np.pi/2, 0]
     s1_rotation_0 = R.from_euler('xyz', r1)
     s2_rotation_0 = R.from_euler('xyz', r2)
     
-    s1_translation_0 = np.array([0,0,0])
-    s2_translation_0 = np.array([0,0,0])
+    s1_translation_0 = np.array([0,0,1])
+    s2_translation_0 = np.array([0,0,1])
 
     sensor1 = Sensor("Sensor 1", s1_translation_0, s1_rotation_0)
     sensor2 = Sensor("Sensor 2", s2_translation_0, s2_rotation_0)
     sensors = BothSensors(sensor1, sensor2)
-
     
-    euler_angles = [0, 0, np.pi/2]
-    new_translation_s1 = np.array([0,0,0])
-
-    sensors.move(new_translation_s1)
-    sensors.rotate(euler_angles)
-
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    
-    rotated_square = [sensor1.rotation.apply(point) for point in sensor2.square]
-    
-    x = [point[0] for point in rotated_square]
-    y = [point[1] for point in rotated_square]
-    z = [point[2] for point in rotated_square] 
+    ax1 = fig.add_subplot(2, 1, 1, projection='3d')
+    ax2 = fig.add_subplot(2, 1, 2, projection='3d')
+    def update(num):
+        ax1.clear()
+        ax2.clear()
+        euler_angles = num* np.array([0, np.pi/2, 0])
+        new_translation_s1 = np.array([0,0,1])
+        sensors.move(new_translation_s1)
+        sensors.rotate(euler_angles)
 
-    ax.scatter(x, y, z, c=['red', 'green', 'blue', 'yellow'])
+        rotated_square1 = [sensor1.rotation.apply(point) for point in sensor2.square]
+        rotated_square2 = [sensor2.rotation.apply(point) for point in sensor2.square]
+        x1 = [point[0] for point in rotated_square1]
+        y1= [point[1] for point in rotated_square1]
+        z1 = [point[2] for point in rotated_square1] 
 
-    ax.plot(x, y, z, '-', c='black')
+        x2 = [point[0] for point in rotated_square2]
+        y2 = [point[1] for point in rotated_square2]
+        z2 = [point[2] for point in rotated_square2] 
 
-    for i in range(4):
-        ax.plot([x[i], 0], [y[i], 0], [z[i], 0], '--', c='gray')
+        ax1.scatter(x1, y1, z1, c=['red', 'green', 'blue', 'yellow'])
+        ax2.scatter(x2, y2, z2, c=['red', 'green', 'blue', 'yellow'])
 
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
-    
+        ax1.plot(x1, y1, z1, '-', c='black')
+        ax2.plot(x2, y2, z2, '-', c='black')
+        for i in range(4):
+            ax1.plot([x1[i], 0], [y1[i], 0], [z1[i], 0], '--', c='gray')
+            ax2.plot([x2[i], 0], [y2[i], 0], [z2[i], 0], '--', c='gray')
+
+        ax1.set_xlabel('x')
+        ax1.set_ylabel('y')
+        ax1.set_zlabel('z')
+        
+        ax2.set_xlabel('x')
+        ax2.set_ylabel('y')
+        ax2.set_zlabel('z')
+
+    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 1000)
     plt.show()
-   
-
     
