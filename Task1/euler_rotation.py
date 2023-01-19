@@ -29,7 +29,6 @@ class BothSensors:
 
     def move(self, s1_new_translation):
         self.sensor2.translation = self.sensor2.translation + (s1_new_translation - self.sensor1.translation)
-        ########### todo 
         self.sensor1.translation = s1_new_translation
 
     def rotate(self, s1_new_rotation):
@@ -74,14 +73,19 @@ if __name__ == "__main__":
         ax1.clear()
         ax2.clear()
         euler_angles = num* np.array([0, np.pi/2, np.pi/2])
-        new_translation_s1 = np.array([0,0,1])
+        new_translation_s1 = np.random.rand(3)
         sensors.move(new_translation_s1)
         sensors.rotate(euler_angles)
 
-        rotated_square1 = [sensor1.rotation.apply(point) for point in sensor2.square]
-        rotated_square2 = [sensor2.rotation.apply(point) for point in sensor2.square]
+        # rotated_square1 = [sensor1.rotation.apply(point) for point in sensor1.square]
+        # rotated_square2 = [sensor2.rotation.apply(point) for point in sensor2.square]
+        rotated_square1 = [np.add(sensor1.rotation.apply(point), sensor1.translation) for point in sensor1.square]
+        rotated_square2 = [np.add(sensor2.rotation.apply(point), sensor2.translation) for point in sensor2.square]
+        # rotated_square1 = [sensor1.translation.apply(point) for point in sensor2.square]
+        # rotated_square2 = [sensor2.translation.apply(point) for point in sensor2.square]
+
         x1 = [point[0] for point in rotated_square1]
-        y1= [point[1] for point in rotated_square1]
+        y1 = [point[1] for point in rotated_square1]
         z1 = [point[2] for point in rotated_square1] 
 
         x2 = [point[0] for point in rotated_square2]
@@ -94,8 +98,11 @@ if __name__ == "__main__":
         ax1.plot(x1, y1, z1, '-', c='black')
         ax2.plot(x2, y2, z2, '-', c='black')
         for i in range(4):
-            ax1.plot([x1[i], 0], [y1[i], 0], [z1[i], 0], '--', c='gray')
-            ax2.plot([x2[i], 0], [y2[i], 0], [z2[i], 0], '--', c='gray')
+            t1 = sensor1.translation
+            t2 = sensor2.translation
+
+            ax1.plot([x1[i], t1[0]], [y1[i],  t1[1]], [z1[i],  t1[2]], '--', c='gray')
+            ax2.plot([x2[i], t2[0]], [y2[i],  t2[1]], [z2[i],  t2[2]], '--', c='gray')
 
         ax1.set_xlabel('x')
         ax1.set_ylabel('y')
@@ -105,6 +112,6 @@ if __name__ == "__main__":
         ax2.set_ylabel('y')
         ax2.set_zlabel('z')
 
-    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 1000)
+    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 2000)
     plt.show()
     
