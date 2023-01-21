@@ -33,7 +33,7 @@ class BothSensors:
 
     def rotate(self, s1_new_rotation):
         r1_t0 = self.sensor1.rotation
-        r1_t1 = R.from_euler('xyz', s1_new_rotation)
+        r1_t1 = s1_new_rotation
         r2_t1 = self.sensor2.rotation
 
         diff = euler_angle_difference(r1_t0,r1_t1) 
@@ -54,10 +54,10 @@ def euler_angle_difference(s1_rotation, s1_new_rotation):
      
 
 if __name__ == "__main__":
-    r1 = [0, 0, 0]
-    r2 = [0, np.pi/2, 0]
-    s1_rotation_0 = R.from_euler('xyz', r1)
-    s2_rotation_0 = R.from_euler('xyz', r2)
+    q1 = R.from_quat([1, 0, 0, 0])
+    q2 = R.from_quat([np.cos(np.pi/4), 0, 0, np.sin(np.pi/4)])
+    s1_rotation_0 = q1
+    s2_rotation_0 = q2
     
     s1_translation_0 = np.array([0,0,1])
     s2_translation_0 = np.array([0,0,1])
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     def update(num):
         ax1.clear()
         ax2.clear()
-        euler_angles = num* np.array([0, np.pi/2, 0])
+        euler_angles = R.from_quat([np.cos(num*np.pi/4), 0, 0, np.sin(num*np.pi/4)])
         new_translation_s1 = np.random.rand(3)
         sensors.move(new_translation_s1)
         sensors.rotate(euler_angles)
@@ -112,6 +112,6 @@ if __name__ == "__main__":
         ax2.set_ylabel('y')
         ax2.set_zlabel('z')
 
-    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 200)
+    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 1000)
     plt.show()
     
