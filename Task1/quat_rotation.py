@@ -3,7 +3,10 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import xlsxwriter
 
+workbook = xlsxwriter.Workbook('Task1.xlsx')
+sheet = workbook.add_worksheet("Task1")
 class Sensor:
     def __init__(self, name, translation, rotation):
         self.name = name
@@ -72,10 +75,10 @@ if __name__ == "__main__":
     def update(num):
         ax1.clear()
         ax2.clear()
-        euler_angles = R.from_quat([np.cos(num*np.pi/4), 0, 0, np.sin(num*np.pi/4)])
+        quaternion = R.random().as_quat()
         new_translation_s1 = np.random.rand(3)
         sensors.move(new_translation_s1)
-        sensors.rotate(euler_angles)
+        sensors.rotate(R.from_quat(quaternion))
 
         # rotated_square1 = [sensor1.rotation.apply(point) for point in sensor1.square]
         # rotated_square2 = [sensor2.rotation.apply(point) for point in sensor2.square]
@@ -111,6 +114,7 @@ if __name__ == "__main__":
         ax2.set_xlabel('x')
         ax2.set_ylabel('y')
         ax2.set_zlabel('z')
+
 
     anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 1000)
     plt.show()
