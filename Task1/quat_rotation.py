@@ -75,10 +75,11 @@ if __name__ == "__main__":
     def update(num):
         ax1.clear()
         ax2.clear()
-        quaternion = R.random().as_quat()
+        quaternion = R.from_quat([np.cos(np.pi/4), np.cos(np.pi/4), 0, np.sin(np.pi/4)])
+        quat = quaternion.as_quat()
         new_translation_s1 = np.random.rand(3)
         sensors.move(new_translation_s1)
-        sensors.rotate(R.from_quat(quaternion))
+        sensors.rotate(R.from_quat(quat))
 
         # rotated_square1 = [sensor1.rotation.apply(point) for point in sensor1.square]
         # rotated_square2 = [sensor2.rotation.apply(point) for point in sensor2.square]
@@ -116,6 +117,6 @@ if __name__ == "__main__":
         ax2.set_zlabel('z')
 
 
-    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 1000)
+    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 3000)
     plt.show()
     

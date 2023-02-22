@@ -34,11 +34,11 @@ class BothSensors:
     def rotate(self, s1_new_rotation):
         r1_t0 = self.sensor1.rotation
         r1_t1 = R.from_euler('xyz', s1_new_rotation)
-        r2_t1 = self.sensor2.rotation
+        r2_t0 = self.sensor2.rotation
 
         diff = euler_angle_difference(r1_t0,r1_t1) 
-        r2_t1 *= diff
-        self.sensor2.rotation = r2_t1
+        r2_t0 *= diff
+        self.sensor2.rotation = r2_t0
         self.sensor1.rotation = r1_t1
         # self.sensor1.square = [r1_t1.apply(point) for point in self.sensor1.square]
         # self.sensor2.square = [r2_t1.apply(point) for point in self.sensor2.square]
@@ -112,6 +112,6 @@ if __name__ == "__main__":
         ax2.set_ylabel('y')
         ax2.set_zlabel('z')
 
-    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 200)
+    anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 1000)
     plt.show()
     
