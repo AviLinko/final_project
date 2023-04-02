@@ -120,3 +120,6 @@ if __name__ == "__main__":
     anim = FuncAnimation(fig, update, frames=range(100), repeat=True, interval = 3000)
     plt.show()
     
+
+
+
