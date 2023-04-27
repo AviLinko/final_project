@@ -36,7 +36,7 @@ sensor2_quat = sensor2_data[['pose.orientation.w','pose.orientation.x', 'pose.or
 #                                [0.0, 0.0, 0.0, 1.0]])
 calibration_matrix = np.array([[-1.0, 0.0, 0.0, 0.0],
                                [0.0, 1.0, 0.0, 0.0],
-                               [0.0, 0.0, -1.0, 0.6216],
+                               [0.0, 0.0, -1.0, 0.6124],
                                [0.0, 0.0, 0.0, 1.0]])
 rotation_matrix = calibration_matrix[:3,:3]
 translation_vector = calibration_matrix[:3,3]
