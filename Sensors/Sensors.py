@@ -49,9 +49,9 @@ for q in sensor2_quat:
 sensor1_pos_calculated  = sensor1_pos_calculated = np.dot(rotation_matrix,(sensor2_pos+np.array(r)).T).T#+translation_vector
 print("Sensor 1 Position: ", sensor1_pos[:3])
 start_index = 1000
-end_index = 3000
+end_index = 4000
 translation_0  = sensor1_pos[start_index,:]-sensor1_pos_calculated[start_index,:]
-sensor1_pos_calculated   = sensor1_pos_calculated + translation_0
+sensor1_pos_calculated = sensor1_pos_calculated + translation_0
 
 plt.figure()
 for ax in range(3):
