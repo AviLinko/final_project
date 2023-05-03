@@ -37,8 +37,6 @@ calibration_matrix = np.array([[-1.0, 0.0, 0.0, 0.0],
                                [0.0, 0.0, 0.0, 1.0]])
 rotation_matrix = calibration_matrix[:3,:3]
 translation_vector = calibration_matrix[:3,3]
-
-# extract the rotation matrix from sensor2_quat and multiply it with the transpose of calibration_matrix
 sensor2_rot = sensor2_quat[:, :3]
 
 
@@ -46,7 +44,7 @@ r = []
 for q in sensor2_quat:
     q_quat = Quaternion(q)
     r.append(q_quat.rotate(translation_vector))
-sensor1_pos_calculated  = sensor1_pos_calculated = np.dot(rotation_matrix,(sensor2_pos+np.array(r)).T).T#+translation_vector
+sensor1_pos_calculated  = np.dot(rotation_matrix,(sensor2_pos+np.array(r)).T).T#+translation_vector 
 print("Sensor 1 Position: ", sensor1_pos[:3])
 start_index = 1000
 end_index = 4000

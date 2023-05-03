@@ -4,11 +4,13 @@ import numpy as np
 from pyquaternion import Quaternion
 import matplotlib.pyplot as plt
 
-sensor_folder = ''
-matrix_folder = ''
+sensor_folder = r"C:\Users\avka9\Desktop\study\projects\final_project\Sensors\data"
+matrix_folder = r"C:\Users\avka9\Desktop\study\projects\final_project\Sensors\rot"
 
 def read_calibration_matrix(file_path): 
     calibration_matrix = pd.read_csv(file_path, header=None).values
+    calibration_matrix = pd.to_numpy()
+    calibration_matrix = calibration_matrix[:4, :4]
     return calibration_matrix
 
 def extract_rotation_translation(calibration_matrix):
@@ -37,23 +39,23 @@ for file in os.listdir(matrix_folder):
 
 
 for i in range(len(sensor_data_list)-1):
-    sensor_pos_s1, sensor_quat_s1= sensor_data_list[i]
+    sensor_pos_s1, sensor_quat_s1 = sensor_data_list[i]
     sensor_pos_s2, sensor_quat_s2 = sensor_data_list[i+1]
-    matrix_s1 = matrix_list[i]
-    rotation_matrix_s1, translation_vector_s1 = extract_rotation_translation(matrix_s1)
-    quaternion_s1 = rotation_matrix_to_quaternion(rotation_matrix_s1)
+    rotation_matrix, translation_vector = extract_rotation_translation(matrix_list[i])
+    
+    # quaternion_s1 = rotation_matrix_to_quaternion(rotation_matrix)
     s2_rot = sensor_quat_s2[:, :3]
     
     r = []
     for q in sensor_quat_s2:
         q_quat = Quaternion(q)
-        r.append(q_quat.rotate(translation_vector_s1))
-    sensor1_pos_calculated  = sensor1_pos_calculated = np.dot(rotation_matrix_s1,(sensor_pos_s2+np.array(r)).T).T#+translation_vector
+        r.append(q_quat.rotate(translation_vector))
+    sensor1_pos_calculated  = np.dot(rotation_matrix,(sensor_pos_s2+np.array(r)).T).T#+translation_vector
     print("Sensor 1 Position: ", sensor_pos_s1[:3])
     start_index = 1000
-    end_index = 4000
+    end_index = 3000
     translation_0  = sensor_pos_s1[start_index,:]-sensor1_pos_calculated[start_index,:]
-    sensor1_pos_calculated = sensor1_pos_calculated + translation_0
+    sensor1_pos_calculated += translation_0
 
     plt.figure()
     for ax in range(3):
