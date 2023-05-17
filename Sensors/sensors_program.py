@@ -45,7 +45,7 @@ def update_plot(time_point, sensor1, sensor2, ax):
     ax.set_zlabel('Z-axis')
     ax.set_title(f'Time: {time_point}')
     ax.legend()
-    plt.pause(0.02)
+    plt.pause(0.001)
 
 
 fig = plt.figure()
@@ -56,7 +56,7 @@ for t in time_points:
     s1 = sensor1_pos[t, :]
     s2 = sensor2_pos[t, :]
     update_plot(t, s1, s2, ax)
-    if plt.waitforbuttonpress(0.001):
+    if plt.waitforbuttonpress(0.002):
         break
 
 plt.show()
