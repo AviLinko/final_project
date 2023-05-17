@@ -14,7 +14,7 @@ sensor2_pos = sensor2_data[['pose.position.x', 'pose.position.y', 'pose.position
 sensor2_quat = sensor2_data[['pose.orientation.x', 'pose.orientation.y', 'pose.orientation.z', 'pose.orientation.w']].values
 
 
-sensor_1_data = pd.read_csv(sensor2)
+sensor_1_data = pd.read_csv(sensor1)
 sensor1_pos = sensor_1_data[['pose.position.x', 'pose.position.y', 'pose.position.z']].values
 sensor1_quat = sensor_1_data[['pose.orientation.x', 'pose.orientation.y', 'pose.orientation.z', 'pose.orientation.w']].values
 calibration_matrix = np.array([[-1.0, 0.0, 0.0, 0.0],
@@ -32,8 +32,8 @@ sensor1_pos_calc = np.dot(rotation_matrix, (sensor2_pos + np.array(r)).T).T
 
 start_index = 1000
 end_index = 4000
-translation_0 = sensor1_pos[start_index, :] - sensor2_pos[start_index, :]
-sensor1_pos_calc = sensor1_pos_calc + translation_0
+translation_0 = sensor1_pos[start_index, :] - sensor1_pos_calc[start_index, :]
+sensor1_pos_calc = sensor1_pos_calc #+ translation_0
 
 # translation_0 = sensor2_pos[0, :] - sensor1_pos[0, :]
 # sensor1_pos = sensor1_pos + translation_0
