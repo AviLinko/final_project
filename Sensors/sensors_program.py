@@ -5,8 +5,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from pyquaternion import Quaternion
 import time
 
-sensor2 = r"/home/adi/workspace/student_projects/jce_2023/final_project/Sensors/s2.csv"
-sensor1 = r"/home/adi/workspace/student_projects/jce_2023/final_project/Sensors/s1.csv"
+sensor2 = r"C:\Users\avka9\Desktop\study\projects\final_project\Sensors\right_sensor.csv"
+sensor1 = r"C:\Users\avka9\Desktop\study\projects\final_project\Sensors\left_sensor.csv"
 
 sensor2_data = pd.read_csv(sensor2)
 
