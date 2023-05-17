@@ -68,5 +68,5 @@ for t in time_points:
 
 plt.show()
 
-sensor1_data = pd.DataFrame(sensor1_pos, columns=['pose.position.x', 'pose.position.y', 'pose.position.z'])
-sensor1_data.to_csv('sensor1_calculated.csv', index=False)
+sensor1_data_calc = pd.DataFrame(sensor1_pos_calc, columns=['pose.position.x', 'pose.position.y', 'pose.position.z'])
+sensor1_data_calc.to_csv('sensor1_calculated.csv', index=False)
