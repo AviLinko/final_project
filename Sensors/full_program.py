@@ -10,8 +10,8 @@ def update_plot(time_point, sensor1, sensor2, sensor3, sensor1_dir, sensor2_dir,
     ax.scatter(*sensor1, color='red', label='Sensor 1')
     ax.scatter(*sensor2, color='blue', label='Sensor 2')
     ax.scatter(*sensor3, color='green', label='Sensor 1_calculated')
-    ax.quiver(*sensor1, *sensor1_dir, color='red', length=0.9, normalize=True)
-    ax.quiver(*sensor2, *sensor2_dir, color='blue', length=0.9, normalize=True)
+    ax.quiver(*sensor1, *sensor1_dir, color='red', length=0.7, normalize=True)
+    ax.quiver(*sensor2, *sensor2_dir, color='blue', length=0.7, normalize=True)
     ax.set_xlim(-2, 2)
     ax.set_ylim(-2, 2)
     ax.set_zlim(-2, 2)
@@ -52,7 +52,7 @@ sensor1_quat_calc = np.array(sensor1_quat_calc)
 sensor1_pos_calc = np.dot(rotation_matrix, (sensor2_pos + np.array(r)).T).T
 
 start_index = 1000
-end_index = 4000
+end_index = 3000
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
