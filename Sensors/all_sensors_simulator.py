@@ -42,7 +42,6 @@ def chain_calibration_matrices(calibration_folder, sensor1, sensor2):
     
     chained_matrix = matrices[0]
     for matrix in matrices[1:]:
-        # check if this calculation give us the chain calculation!
         chained_matrix = np.dot(chained_matrix, matrix)
     
     return chained_matrix
