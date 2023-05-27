@@ -9,9 +9,10 @@ def update_plot(time_point, sensor_positions, sensor_directions, ax):
     ax.clear()
     colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', 'yellow']
     
-    for i, (pos, dir) in enumerate(zip(sensor_positions, sensor_directions)):
+    for i, (pos, dirs) in enumerate(zip(sensor_positions, sensor_directions)):
         ax.scatter(*pos, color=colors[i % len(colors)], label=f'Sensor {i + 1}')
-        ax.quiver(*pos, *dir, color=colors[i % len(colors)], length=0.6, normalize=True)
+        for j, color in enumerate(['r', 'g', 'b']):
+            ax.quiver(*pos, *dirs[:, j], color=color, length=0.6, normalize=True)
     
     ax.set_xlim(-2, 2)
     ax.set_ylim(-2, 2)
@@ -74,7 +75,9 @@ def perform_simulation(sensor_folder, calibration_folder):
     time_points = range(start_index, end_index)
     for t in time_points:
         sensor_positions_t = [sensor_positions[0][t, :]]
-        sensor_directions_t = [Quaternion(sensor_orientations[0][t, :]).rotate(np.array([1, 0, 0]))]
+        sensor_directions_t = [np.column_stack([Quaternion(sensor_orientations[0][t, :]).rotate(np.array([1, 0, 0])),
+                                                Quaternion(sensor_orientations[0][t, :]).rotate(np.array([0, 1, 0])),
+                                                Quaternion(sensor_orientations[0][t, :]).rotate(np.array([0, 0, 1]))])]
         
         for i in range(1, num_sensors):
             rotation_matrix = calibration_matrices[i - 1][:3, :3]
@@ -83,7 +86,9 @@ def perform_simulation(sensor_folder, calibration_folder):
             r = q2_quat.rotate(translation_vector)
             pos = np.dot(rotation_matrix, (sensor_positions[i][t, :] + r).T).T
             sensor_positions_t.append(pos)
-            sensor_directions_t.append(Quaternion(sensor_orientations[i][t, :]).rotate(np.array([1, 0, 0])))
+            sensor_directions_t.append(np.column_stack([Quaternion(sensor_orientations[i][t, :]).rotate(np.array([1, 0, 0])),
+                                                        Quaternion(sensor_orientations[i][t, :]).rotate(np.array([0, 1, 0])),
+                                                        Quaternion(sensor_orientations[i][t, :]).rotate(np.array([0, 0, 1]))]))
         
         update_plot(t, sensor_positions_t, sensor_directions_t, ax)
         if plt.waitforbuttonpress(0.001):
