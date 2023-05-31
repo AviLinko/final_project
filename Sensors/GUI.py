@@ -7,14 +7,20 @@ import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import filedialog, ttk
 
-def update_plot(time_point, sensor_positions, sensor_directions, ax):
+def update_plot(time_point, sensor_positions, sensor_directions, ax, sensor_fusion_enabled=False):
     ax.clear()
     colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta', 'yellow']
     
-    for i, (pos, dirs) in enumerate(zip(sensor_positions, sensor_directions)):
-        ax.scatter(*pos, color=colors[i % len(colors)], label=f'Sensor {i + 1}')
+    if sensor_fusion_enabled:
+        pos, dirs = sensor_positions[-1], sensor_directions[-1]
+        ax.scatter(*pos, color='red', label='Fused Sensor')
         for j, color in enumerate(['r', 'g', 'b']):
             ax.quiver(*pos, *dirs[:, j], color=color, length=0.6, normalize=True)
+    else:
+        for i, (pos, dirs) in enumerate(zip(sensor_positions, sensor_directions)):
+            ax.scatter(*pos, color=colors[i % len(colors)], label=f'Sensor {i + 1}')
+            for j, color in enumerate(['r', 'g', 'b']):
+                ax.quiver(*pos, *dirs[:, j], color=color, length=0.6, normalize=True)
     
     ax.set_xlim(-2, 2)
     ax.set_ylim(-2, 2)
@@ -25,6 +31,7 @@ def update_plot(time_point, sensor_positions, sensor_directions, ax):
     ax.set_title(f'Time: {time_point}')
     ax.legend()
     plt.pause(0.001)
+
 
 def load_sensor_data(sensor_file):
     sensor_data = pd.read_csv(sensor_file)
@@ -37,7 +44,26 @@ def load_calibration_matrices_from_json(json_file):
         calibration_matrices = json.load(f)
     return [np.array(matrix) for matrix in calibration_matrices]
 
-def perform_simulation(sensor_file, calibration_matrices, selected_sensors=None):
+def sensor_fusion(sensor_positions, sensor_orientations):
+    fused_position = np.mean(sensor_positions, axis=0)
+    
+    num_orientations = len(sensor_orientations)
+    q_matrix = np.zeros((4, 4))
+    
+    for q_float in sensor_orientations:
+        q = Quaternion(q_float)
+        q_matrix += np.outer(q.elements, q.elements)
+    
+    q_matrix /= num_orientations
+    eigenvalues, eigenvectors = np.linalg.eig(q_matrix)
+    max_eigenvalue_index = np.argmax(eigenvalues)
+    fused_orientation = Quaternion(eigenvectors[:, max_eigenvalue_index])
+    
+    return fused_position, fused_orientation
+
+
+
+def perform_simulation(sensor_file, calibration_matrices, selected_sensors=None, sensor_fusion_enabled=False):
     sensor_positions, sensor_orientations = load_sensor_data(sensor_file)
 
     num_sensors = len(calibration_matrices) + 1
@@ -71,24 +97,22 @@ def perform_simulation(sensor_file, calibration_matrices, selected_sensors=None)
                                                         Quaternion(sensor_orientations[t, :]).rotate(np.array([0, 1, 0])),
                                                         Quaternion(sensor_orientations[t, :]).rotate(np.array([0, 0, 1]))]))
 
-        update_plot(t, sensor_positions_t, sensor_directions_t, ax)
+        if sensor_fusion_enabled:
+            fused_position, fused_orientation = sensor_fusion(sensor_positions_t, sensor_orientations[t, :])
+            sensor_positions_t.append(fused_position)
+            sensor_directions_t.append(np.column_stack([fused_orientation.rotate(np.array([1, 0, 0])),
+                                                        fused_orientation.rotate(np.array([0, 1, 0])),
+                                                        fused_orientation.rotate(np.array([0, 0, 1]))]))
+
+        update_plot(t, sensor_positions_t, sensor_directions_t, ax, sensor_fusion_enabled)
         if plt.waitforbuttonpress(0.001):
             break
 
     plt.show()
 
-
-def browse_sensor_file():
-    file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
-    sensor_file_var.set(file_path)
-
-def browse_calibration_file():
-    file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
-    calibration_file_var.set(file_path)
-
 def run_simulation():
-    sensor_file = sensor_file_var.get()
-    calibration_file = calibration_file_var.get()
+    sensor_file = r"C:\Users\avka9\Desktop\study\projects\final_project\Sensors\left_sensor.csv"
+    calibration_file = r"C:\Users\avka9\Desktop\study\projects\final_project\Sensors\matrices.json" 
     calibration_matrices = load_calibration_matrices_from_json(calibration_file)
 
     if simulation_type_var.get() == "All Sensors":
@@ -96,44 +120,31 @@ def run_simulation():
     elif simulation_type_var.get() == "2 Sensors":
         selected_sensors = [int(sensor1_entry.get()), int(sensor2_entry.get())]
         perform_simulation(sensor_file, calibration_matrices, selected_sensors)
+    elif simulation_type_var.get() == "Sensor Fusion":
+        perform_simulation(sensor_file, calibration_matrices, sensor_fusion_enabled=True)
 
 root = tk.Tk()
 root.title("Sensor Simulation")
 
-sensor_file_var = tk.StringVar()
-calibration_file_var = tk.StringVar()
 simulation_type_var = tk.StringVar(value="All Sensors")
 
-sensor_file_label = ttk.Label(root, text="Sensor File:")
-sensor_file_label.grid(column=0, row=0, sticky="W")
-sensor_file_entry = ttk.Entry(root, textvariable=sensor_file_var)
-sensor_file_entry.grid(column=1, row=0, sticky="W")
-sensor_file_button = ttk.Button(root, text="Browse", command=browse_sensor_file)
-sensor_file_button.grid(column=2, row=0, sticky="W")
-
-calibration_file_label = ttk.Label(root, text="Calibration File:")
-calibration_file_label.grid(column=0, row=1, sticky="W")
-calibration_file_entry = ttk.Entry(root, textvariable=calibration_file_var)
-calibration_file_entry.grid(column=1, row=1, sticky="W")
-calibration_file_button = ttk.Button(root, text="Browse", command=browse_calibration_file)
-calibration_file_button.grid(column=2, row=1, sticky="W")
-
 simulation_type_label = ttk.Label(root, text="Simulation Type:")
-simulation_type_label.grid(column=0, row=2, sticky="W")
-simulation_type_combobox = ttk.Combobox(root, textvariable=simulation_type_var, values=["All Sensors", "2 Sensors"])
-simulation_type_combobox.grid(column=1, row=2, sticky="W")
+simulation_type_label.grid(column=0, row=0, sticky="W")
+simulation_type_combobox = ttk.Combobox(root, textvariable=simulation_type_var, values=["All Sensors", "2 Sensors", "Sensor Fusion"])
+simulation_type_combobox.grid(column=1, row=0, sticky="W")
+
 
 sensor1_label = ttk.Label(root, text="Sensor 1:")
-sensor1_label.grid(column=0, row=3, sticky="W")
+sensor1_label.grid(column=0, row=1, sticky="W")
 sensor1_entry = ttk.Entry(root)
-sensor1_entry.grid(column=1, row=3, sticky="W")
+sensor1_entry.grid(column=1, row=1, sticky="W")
 
 sensor2_label = ttk.Label(root, text="Sensor 2:")
-sensor2_label.grid(column=0, row=4, sticky="W")
+sensor2_label.grid(column=0, row=2, sticky="W")
 sensor2_entry = ttk.Entry(root)
-sensor2_entry.grid(column=1, row=4, sticky="W")
+sensor2_entry.grid(column=1, row=2, sticky="W")
 
 run_button = ttk.Button(root, text="Run Simulation", command=run_simulation)
-run_button.grid(column=1, row=5, sticky="W")
+run_button.grid(column=1, row=3, sticky="W")
 
 root.mainloop()
