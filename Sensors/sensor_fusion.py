@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from pyquaternion import Quaternion
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
 
 def update_plot(time_point, central_point, ax):
     ax.clear()

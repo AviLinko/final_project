@@ -84,8 +84,8 @@ for t in time_points:
 
 plt.show()
 
-sensor1_data_calc_pos = pd.DataFrame(sensor1_pos_calc, columns=['pose.position.x', 'pose.position.y', 'pose.position.z'])
-sensor1_data_calc_pos.to_csv('sensor1_calculated_position.csv', index=False)
+# sensor1_data_calc_pos = pd.DataFrame(sensor1_pos_calc, columns=['pose.position.x', 'pose.position.y', 'pose.position.z'])
+# sensor1_data_calc_pos.to_csv('sensor1_calculated_position.csv', index=False)
 
-sensor1_data_calc_quat = pd.DataFrame(sensor1_quat_calc, columns=['pose.orientation.x', 'pose.orientation.y', 'pose.orientation.z', 'pose.orientation.w'])
-sensor1_data_calc_quat.to_csv('sensor1_calculated_quaternion.csv', index=False)
+# sensor1_data_calc_quat = pd.DataFrame(sensor1_quat_calc, columns=['pose.orientation.x', 'pose.orientation.y', 'pose.orientation.z', 'pose.orientation.w'])
+# sensor1_data_calc_quat.to_csv('sensor1_calculated_quaternion.csv', index=False)
