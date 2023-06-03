@@ -98,7 +98,7 @@ def perform_simulation(sensor_file, calibration_matrices, selected_sensors=None,
                                                         Quaternion(sensor_orientations[t, :]).rotate(np.array([0, 0, 1]))]))
 
         if sensor_fusion_enabled:
-            fused_position, fused_orientation = sensor_fusion(sensor_positions_t, sensor_orientations[t, :])
+            fused_position, fused_orientation = sensor_fusion(sensor_positions_t, [sensor_orientations[t, :] for _ in range(len(sensor_positions_t))])
             sensor_positions_t.append(fused_position)
             sensor_directions_t.append(np.column_stack([fused_orientation.rotate(np.array([1, 0, 0])),
                                                         fused_orientation.rotate(np.array([0, 1, 0])),
@@ -109,6 +109,7 @@ def perform_simulation(sensor_file, calibration_matrices, selected_sensors=None,
             break
 
     plt.show()
+
 
 def run_simulation():
     sensor_file = r"C:\Users\avka9\Desktop\study\projects\final_project\Sensors\left_sensor.csv"
